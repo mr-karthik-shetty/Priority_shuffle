@@ -8,12 +8,11 @@ de = collections.deque()
 
 class Node:
     #creation of node
-    def __init__(self, data,height,visited):
+    def __init__(self, data,height):
         self.left = None
         self.right = None
         self.data = data
         self.height=height
-        self.visited=False
 
 #level order tree traversal
 def printLevel(root,tree_height):
@@ -60,7 +59,7 @@ def printInorder(root):
 def insert(data,root,count):
     count+=1
     height=math.ceil(math.log2(count+1))
-    node=Node(data,height,False)
+    node=Node(data,height)
     if root==None:
         root=node
     elif (de[0].left==None):
@@ -76,35 +75,32 @@ def shuffle(root,tree_height):
     # Base Case
     if root is None:
         return
-    residue=0
-    for i in range(count):
-        # Create an empty queue for level order traversal
-        queue = []
 
-        # Enqueue Root and initialize height
-        queue.append(root)
-        thresh=random.random()
-        while(len(queue) > 0):
-            # Print front of queue and remove it from queue
-            prob=tree_height*(2**(queue[0].height-1))
-            prob=1/prob
-            prob+=residue
-            print(thresh,prob,residue)
-            if(thresh<prob and queue[0].visited==False):
-                print (queue[0].data,prob)
-                residue+=prob/(count-i-1)
-                break
-            else:
-                thresh-=prob
-            node = queue.pop(0)
+    # Create an empty queue for level order traversal
+    queue = []
 
-            #Enqueue left child
-            if node.left is not None:
-                queue.append(node.left)
+    # Enqueue Root and initialize height
+    queue.append(root)
+    thresh=random.random()
+    while(len(queue) > 0):
+        # Print front of queue and remove it from queue
+        prob=tree_height*(2**(queue[0].height-1))
+        prob=1/prob
+        print(thresh,prob)
+        if(thresh<prob):
+            print (queue[0].data,prob)
+            return
+        else:
+            thresh-=prob
+        node = queue.pop(0)
 
-            # Enqueue right child
-            if node.right is not None:
-                queue.append(node.right)
+        #Enqueue left child
+        if node.left is not None:
+            queue.append(node.left)
+
+        # Enqueue right child
+        if node.right is not None:
+            queue.append(node.right)
 
 root=None
 #stores number of nodes

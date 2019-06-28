@@ -8,11 +8,12 @@ de = collections.deque()
 
 class Node:
     #creation of node
-    def __init__(self, data,height):
+    def __init__(self, data,height,visited):
         self.left = None
         self.right = None
         self.data = data
         self.height=height
+        self.visited=visited
 
 #level order tree traversal
 def printLevel(root,tree_height):
@@ -59,7 +60,7 @@ def printInorder(root):
 def insert(data,root,count):
     count+=1
     height=math.ceil(math.log2(count+1))
-    node=Node(data,height)
+    node=Node(data,height,False)
     if root==None:
         root=node
     elif (de[0].left==None):
@@ -71,36 +72,44 @@ def insert(data,root,count):
     de.append(node)
     return root,count
 
-def shuffle(root,tree_height):
+def shuffle(root,tree_height,count):
     # Base Case
-    if root is None:
-        return
+    add=0
+    final=[]
+    for i in range(count):
+        # Create an empty queue for level order traversal
+        queue = []
 
-    # Create an empty queue for level order traversal
-    queue = []
+        # Enqueue Root and initialize height
 
-    # Enqueue Root and initialize height
-    queue.append(root)
-    thresh=random.random()
-    while(len(queue) > 0):
-        # Print front of queue and remove it from queue
-        prob=tree_height*(2**(queue[0].height-1))
-        prob=1/prob
-        print(thresh,prob)
-        if(thresh<prob):
-            print (queue[0].data,prob)
-            return
-        else:
-            thresh-=prob
-        node = queue.pop(0)
+        queue.append(root)
+        thresh=random.random()
+        while(len(queue) > 0):
+            # Print front of queue and remove it from queue
+            prob=tree_height*(2**(queue[0].height-1))
+            prob=1/prob
+            print("Thresh=",thresh,"Prob=",prob,"add=",add)
+            prob+=add
+            if(queue[0].visited==False):
+                if(thresh<prob):
+                    print (queue[0].data,prob)
+                    final.append(queue[0].data)
+                    if(i!=count-1):
+                        add+=prob/(count-i-1)
+                        queue[0].visited=True
+                    break
+                else:
+                    thresh-=prob
+            node = queue.pop(0)
 
-        #Enqueue left child
-        if node.left is not None:
-            queue.append(node.left)
+            #Enqueue left child
+            if node.left is not None:
+                queue.append(node.left)
 
-        # Enqueue right child
-        if node.right is not None:
-            queue.append(node.right)
+            # Enqueue right child
+            if node.right is not None:
+                queue.append(node.right)
+    return final
 
 root=None
 #stores number of nodes
@@ -121,4 +130,5 @@ leaves=int((count+1)/2)
 #    print(i.data)
 #print("Height of tree-",tree_height)
 #print("Leaves-",leaves)
-shuffle(root,tree_height)
+out=shuffle(root,tree_height,count)
+print(out)
